@@ -1,0 +1,13 @@
+apps:
+  bitch:
+    command: bitch
+    health-check:
+      http:
+        path: /path
+        timeout: 1000
+        wait-after-start: 10000
+        repeat-after: 1000
+      stop-action:
+        signal:
+          signal-type: SIGTERM
+          timeout: 10000
