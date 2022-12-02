@@ -27,6 +27,7 @@ func NewObserver() *Observer {
 	return &Observer{Processes: make(map[int]*os.Process)}
 }
 
+// Start starts process and adds it to Observer.Processes
 func (o *Observer) Start(command *Command) (int, error) {
 	cmd := exec.Command(command.name, command.args...)
 	cmd.Stdout = os.Stdout
