@@ -1,9 +1,11 @@
 apps:
   bitch:
-    command: bitch
+    command: ./test/app
     health-check:
       http:
-        path: /path
+        host: localhost
+        port: 1080
+        path: /hello
         timeout: 1000
         wait-after-start: 10000
         repeat-after: 1000
