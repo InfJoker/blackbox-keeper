@@ -2,8 +2,8 @@ package main
 
 import (
 	"blackbox-keeper/configuration"
-	"blackbox-keeper/healthcheckmanager"
-	"blackbox-keeper/processmanager"
+	"blackbox-keeper/healthcheck"
+	"blackbox-keeper/process"
 	"fmt"
 	"log"
 	"time"
@@ -17,8 +17,8 @@ func main() {
 
 	fmt.Printf("%v/n", config)
 
-	processManager := processmanager.NewManager(config)
-	healthCheckManager := healthcheckmanager.NewManager(config)
+	processManager := process.NewManager(config)
+	healthCheckManager := healthcheck.NewCheckers(config)
 
 	err = processManager.StartProcesses()
 	if err != nil {
@@ -26,7 +26,5 @@ func main() {
 	}
 	time.Sleep(time.Second * 5) // LAME
 
-	for {
-		healthCheckManager.RunChecks(processManager)
-	}
+	<-healthCheckManager.RunChecks(processManager)
 }

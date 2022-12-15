@@ -20,6 +20,5 @@ func NewConfiguration(filename string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-
 	return cfg, nil
 }
