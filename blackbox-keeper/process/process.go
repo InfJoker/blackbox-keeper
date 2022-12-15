@@ -4,14 +4,12 @@ import (
 	"blackbox-keeper/configuration"
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
 	"time"
 )
 
 type Process struct {
 	cmd            *exec.Cmd
-	Process        *os.Process
 	WaitAfterStart time.Duration // Millisecond
 	RepeatAfter    time.Duration // Millisecond
 	Timeout        time.Duration // Millisecond
@@ -22,11 +20,11 @@ func (p *Process) Start() error {
 }
 
 func (p *Process) Kill() error {
-	err := p.Process.Kill()
+	err := p.cmd.Process.Kill()
 	if err != nil {
 		return err
 	}
-	p.Process.Wait()
+	p.cmd.Process.Wait()
 	p.cmd.Process = nil
 	return nil
 }
@@ -38,7 +36,6 @@ func NewManager(config configuration.Config) Manager {
 	for name, appConfig := range config.Apps {
 		res[name] = &Process{
 			cmd:            exec.Command(appConfig.Command),
-			Process:        nil,
 			WaitAfterStart: time.Millisecond * time.Duration(appConfig.HealthCheck.Http.WaitAfterStartMilli),
 			RepeatAfter:    time.Millisecond * time.Duration(appConfig.HealthCheck.Http.WaitAfterStartMilli),
 			Timeout:        time.Millisecond * time.Duration(appConfig.HealthCheck.Http.TimeoutMilli),
@@ -54,7 +51,6 @@ func (m Manager) StartProcesses() error {
 			return fmt.Errorf("failed to start %s: %w", name, err) // TODO Maybe abort others too here
 		}
 		log.Printf("%s succesfully launched!!!\n", name)
-		m[name].Process = p.cmd.Process
 	}
 	return nil
 }
