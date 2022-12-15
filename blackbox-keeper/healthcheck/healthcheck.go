@@ -11,11 +11,11 @@ import (
 	"time"
 )
 
-type HttpChecker interface {
+type Checker interface {
 	Check(timeout time.Duration) error
 }
 
-type Checkers map[string]HttpChecker
+type Checkers map[string]Checker
 
 type httpChecker struct { // TODO should be with interface and in separate file
 	host string
@@ -67,8 +67,7 @@ func NewCheckers(config configuration.Config) Checkers { // TODO parse more para
 	return checkers
 }
 
-func (h Checkers) RunChecks(pm process.Manager) <-chan struct{} {
-	var wg sync.WaitGroup
+func (h Checkers) RunChecks(pm process.Manager, wg *sync.WaitGroup) <-chan struct{} {
 	wg.Add(len(h))
 	for name, check := range h {
 		name, check := name, check
@@ -80,11 +79,11 @@ func (h Checkers) RunChecks(pm process.Manager) <-chan struct{} {
 	return make(chan struct{})
 }
 
-func runCheck(name string, check HttpChecker, pm process.Manager) {
+func runCheck(name string, check Checker, pm process.Manager) {
 	for {
-		time.Sleep(pm[name].RepeatAfter)
 		err := check.Check(pm[name].Timeout)
 		if err != nil { // TODO do this smarter
+			log.Print(err)
 			log.Printf("Restarting app %s...", name)
 			err = pm.KillProcess(name)
 			if err != nil {
@@ -94,8 +93,10 @@ func runCheck(name string, check HttpChecker, pm process.Manager) {
 			if err != nil {
 				log.Printf("Failed starting the app %s", name)
 			}
-			time.Sleep(pm[name].WaitAfterStart) // This is lame
 			log.Printf("Successfuly restarted app %s", name)
+			time.Sleep(pm[name].WaitAfterStart) // This is lame
+		} else {
+			time.Sleep(pm[name].RepeatAfter)
 		}
 	}
 }
