@@ -10,23 +10,23 @@ import (
 )
 
 func main() {
-    config, err := configuration.NewConfiguration("conf.yml")
-    if err != nil {
-        log.Fatal(err)
-    }
+	config, err := configuration.NewConfiguration("conf.yml")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    fmt.Printf("%v/n", config)
+	fmt.Printf("%v/n", config)
 
-    processManager := processmanager.NewManager(config)
-    healthCheckManager := healthcheckmanager.NewManager(config)
+	processManager := processmanager.NewManager(config)
+	healthCheckManager := healthcheckmanager.NewManager(config)
 
-    err = processManager.StartProcesses()
-    if err != nil {
-        log.Fatal(err)
-    }
-    time.Sleep(time.Second * 5) // LAME
+	err = processManager.StartProcesses()
+	if err != nil {
+		log.Fatal(err)
+	}
+	time.Sleep(time.Second * 5) // LAME
 
-    for true {
-        healthCheckManager.RunChecks(processManager)
-    }
+	for {
+		healthCheckManager.RunChecks(processManager)
+	}
 }
