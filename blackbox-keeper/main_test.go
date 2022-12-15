@@ -1,4 +1,4 @@
-package main
+package main_test
 
 import (
 	"blackbox-keeper/configuration"
@@ -6,11 +6,26 @@ import (
 	"blackbox-keeper/process"
 	"fmt"
 	"log"
+	"os/exec"
 	"sync"
+	"testing"
 	"time"
 )
 
-func main() {
+func startTestApp() error {
+	output, err := exec.Command("go", "build", "-o", "./test/app", "./test/main.go").CombinedOutput()
+	if err != nil {
+		return err
+	}
+	log.Print(output)
+	log.Print("test app successfully started")
+	return nil
+}
+
+func Test(t *testing.T) {
+	if err := startTestApp(); err != nil {
+		t.Fatalf("failed to start test app: %v", err)
+	}
 	config, err := configuration.NewConfiguration("conf.yml")
 	if err != nil {
 		log.Fatal(err)
