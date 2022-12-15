@@ -73,30 +73,30 @@ func (h Checkers) RunChecks(pm process.Manager, wg *sync.WaitGroup) <-chan struc
 		name, check := name, check
 		go func() {
 			defer wg.Done()
-			runCheck(name, check, pm)
+			runCheck(name, check, pm[name])
 		}()
 	}
 	return make(chan struct{})
 }
 
-func runCheck(name string, check Checker, pm process.Manager) {
+func runCheck(name string, check Checker, pm *process.Process) {
 	for {
-		err := check.Check(pm[name].Timeout)
+		err := check.Check(pm.Timeout)
 		if err != nil { // TODO do this smarter
 			log.Print(err)
 			log.Printf("Restarting app %s...", name)
-			err = pm.KillProcess(name)
+			err = pm.Kill()
 			if err != nil {
 				log.Printf("Failed stopping the app %s", name)
 			}
-			err = pm.StartProcess(name)
+			err = pm.Start()
 			if err != nil {
 				log.Printf("Failed starting the app %s", name)
 			}
 			log.Printf("Successfuly restarted app %s", name)
-			time.Sleep(pm[name].WaitAfterStart) // This is lame
+			time.Sleep(pm.WaitAfterStart) // This is lame
 		} else {
-			time.Sleep(pm[name].RepeatAfter)
+			time.Sleep(pm.RepeatAfter)
 		}
 	}
 }

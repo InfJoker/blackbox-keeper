@@ -17,6 +17,20 @@ type Process struct {
 	Timeout        time.Duration // Millisecond
 }
 
+func (p *Process) Start() error {
+	return p.cmd.Start()
+}
+
+func (p *Process) Kill() error {
+	err := p.Process.Kill()
+	if err != nil {
+		return err
+	}
+	p.Process.Wait()
+	p.cmd.Process = nil
+	return nil
+}
+
 type Manager map[string]*Process
 
 func NewManager(config configuration.Config) Manager {
@@ -46,15 +60,9 @@ func (m Manager) StartProcesses() error {
 }
 
 func (m Manager) StartProcess(name string) error {
-	return m[name].cmd.Start()
+	return m[name].Start()
 }
 
 func (m Manager) KillProcess(name string) error {
-	err := m[name].Process.Kill()
-	if err != nil {
-		return err
-	}
-	m[name].Process.Wait()
-	m[name].cmd.Process = nil
-	return nil
+	return m[name].Kill()
 }
