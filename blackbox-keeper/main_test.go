@@ -13,7 +13,7 @@ import (
 )
 
 func startTestApp() error {
-	output, err := exec.Command("go", "build", "-o", "app", "./test/main.go").CombinedOutput()
+	output, err := exec.Command("go", "build", "-o", "./test/app", "./test/main.go").CombinedOutput()
 	if err != nil {
 		return err
 	}
