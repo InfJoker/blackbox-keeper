@@ -1,6 +1,6 @@
 package configuration
 
-type Config struct {
+type ConfigYaml struct {
 	Apps map[string]struct {
 		Command     string `yaml:"command"`
 		HealthCheck struct {

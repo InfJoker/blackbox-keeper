@@ -11,15 +11,18 @@ import (
 )
 
 func main() {
-	config, err := configuration.NewConfiguration("conf.yml")
+	configYaml, err := configuration.NewYamlConfiguration("conf.yml")
+	configXml, err := configuration.NewXmlConfiguration("conf.xml")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%v\n", config)
+	fmt.Printf("%v\n", configXml)
 
-	processManager := process.NewManager(config)
-	healthCheckManager := healthcheck.NewCheckers(config)
+	fmt.Printf("%v\n", configYaml)
+
+	processManager := process.NewManager(configYaml)
+	healthCheckManager := healthcheck.NewCheckers(configYaml)
 
 	err = processManager.StartProcesses()
 	if err != nil {
