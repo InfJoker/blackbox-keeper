@@ -18,7 +18,10 @@ func main() {
 
 	fmt.Printf("%v\n", config)
 
-	processManager := process.NewManager(config)
+	processManager, err := process.NewManager(config)
+	if err != nil {
+		log.Fatal(err)
+	}
 	healthCheckManager := healthcheck.NewCheckers(config)
 
 	err = processManager.StartProcesses()

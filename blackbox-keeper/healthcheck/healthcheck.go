@@ -5,8 +5,10 @@ import (
 	"blackbox-keeper/process"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -96,7 +98,34 @@ func runCheck(name string, check Checker, pm *process.Process) {
 			log.Printf("Successfuly restarted app %s", name)
 			time.Sleep(pm.WaitAfterStart) // This is lame
 		} else {
-			time.Sleep(pm.RepeatAfter)
+			c := make(chan struct{})
+			go func() {
+				var wg sync.WaitGroup
+				wg.Add(2)
+				go func() {
+					_, err := io.Copy(os.Stderr, pm.Stderr)
+					if err != nil {
+						log.Printf("error on writing from stderr pipe of %s: %v", name, err)
+					}
+					wg.Done()
+				}()
+				go func() {
+					_, err := io.Copy(os.Stdout, pm.Stdout)
+					if err != nil {
+						log.Printf("error on writing from stdout pipe of %s: %v", name, err)
+					}
+					wg.Done()
+				}()
+				wg.Wait()
+				c <- struct{}{}
+			}()
+			select {
+			case <-c:
+				log.Printf("log successfuly saved")
+			case <-time.After(pm.RepeatAfter):
+				// TODO: but it will be done anyway in background, cause idk how to kill goroutine
+				log.Printf("didn't have enough time for saving logs")
+			}
 		}
 	}
 }
