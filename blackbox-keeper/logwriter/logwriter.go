@@ -9,7 +9,8 @@ import (
 
 type LogWriter interface {
 	Save(name string) chan error
-	Read(buf []byte) (int, error)
+	ReadStdErr(buf []byte) (int, error)
+	ReadStdOut(buf []byte) (int, error)
 }
 
 func NewLogWriter(stdout, stderr io.ReadCloser) *logWriter {
@@ -54,13 +55,23 @@ func (l *logWriter) Save(name string) chan error {
 	return e
 }
 
+// ReadStdErr copies saved output from stderr in buf
+func (l *logWriter) ReadStdErr(buf []byte) (int, error) {
+	return l.err.Read(buf)
+}
+
+// ReadStdOut copies saved output from stderr in buf
+func (l *logWriter) ReadStdOut(buf []byte) (int, error) {
+	return l.out.Read(buf)
+}
+
 // Read copies saved output from stderr and stdout in buf (relatively)
 func (l *logWriter) Read(buf []byte) (int, error) {
-	e, err1 := l.err.Read(buf)
+	e, err1 := l.ReadStdErr(buf)
 	if err1 != nil {
 		return 0, err1
 	}
-	o, err2 := l.out.Read(buf)
+	o, err2 := l.ReadStdOut(buf)
 	if err2 != nil {
 		return 0, err2
 	}
