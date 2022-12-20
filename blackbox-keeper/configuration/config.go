@@ -19,5 +19,13 @@ type Config struct {
 				} `yaml:"signal"`
 			} `yaml:"stop-action"`
 		} `yaml:"health-check"`
+		Exporter struct {
+			ErrorSleepMilli int64 `yaml:"error-sleep"`
+			Rabbit          struct {
+				Url      string `yaml:"url"`
+				OutQueue string `yaml:"stdout-queue"`
+				ErrQueue string `yaml:"stderr-queue"`
+			} `yaml:"rabbit"`
+		} `yaml:"exporter"`
 	} `yaml:"apps"`
 }
