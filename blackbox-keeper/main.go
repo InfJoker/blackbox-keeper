@@ -4,7 +4,6 @@ import (
 	"blackbox-keeper/configuration"
 	"blackbox-keeper/healthcheck"
 	"blackbox-keeper/process"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -12,11 +11,10 @@ import (
 
 func main() {
 	config, err := configuration.NewConfiguration("conf.yml")
+	_, err = configuration.NewXmlConfiguration("conf.xml")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("%v\n", config)
 
 	processManager := process.NewManager(config)
 	healthCheckManager := healthcheck.NewCheckers(config)
