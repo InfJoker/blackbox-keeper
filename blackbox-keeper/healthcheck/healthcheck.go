@@ -91,7 +91,8 @@ func runCheck(name string, check Checker, pm *process.Process) {
 			}
 			err = pm.Start()
 			if err != nil {
-				log.Printf("Failed starting the app %s", name)
+				log.Printf("Failed starting the app %s : %s", name, err)
+				continue
 			}
 			log.Printf("Successfuly restarted app %s", name)
 			time.Sleep(pm.WaitAfterStart) // This is lame

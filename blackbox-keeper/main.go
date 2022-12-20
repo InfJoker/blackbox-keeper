@@ -3,6 +3,7 @@ package main
 import (
 	"blackbox-keeper/configuration"
 	"blackbox-keeper/healthcheck"
+	"blackbox-keeper/logwriter"
 	"blackbox-keeper/process"
 	"log"
 	"sync"
@@ -17,6 +18,7 @@ func main() {
 	}
 
 	processManager := process.NewManager(config)
+	logWriters := logwriter.NewLogWriters(config)
 	healthCheckManager := healthcheck.NewCheckers(config)
 
 	err = processManager.StartProcesses()
@@ -26,7 +28,9 @@ func main() {
 	time.Sleep(time.Second * 5) // LAME
 
 	var wg sync.WaitGroup
+	logWriters.RunWriters(processManager, &wg)
 
 	healthCheckManager.RunChecks(processManager, &wg)
+
 	wg.Wait()
 }

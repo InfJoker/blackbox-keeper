@@ -2,7 +2,7 @@ apps:
   # app name
   subprogram:
     # command to run subprogram
-    command: ./test/app
+    command: go run test/subprogram/subprogram.go
     # health-check config
     health-check:
       http:
@@ -25,3 +25,8 @@ apps:
           signal-type: SIGTERM
           # signal timeout for stopping application
           timeout: 10000
+    exporter:
+      error-sleep: 1000
+      rabbit:
+        url: "amqp://guest:guest@localhost:5672/"
+        stdout-queue: hello
