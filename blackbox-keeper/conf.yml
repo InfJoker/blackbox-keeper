@@ -1,6 +1,6 @@
 apps:
   bitch:
-    command: ./test/app
+    command: go run test/subprogram/subprogram.go
     health-check:
       http:
         host: localhost

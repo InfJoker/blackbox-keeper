@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -84,8 +85,9 @@ type Manager map[string]*Process
 func NewManager(config configuration.Config) Manager {
 	res := make(Manager, len(config.Apps))
 	for name, appConfig := range config.Apps {
+		splittedCommand := strings.Split(appConfig.Command, " ")
 		res[name] = &Process{
-			cmd:            exec.Command(appConfig.Command),
+			cmd:            exec.Command(splittedCommand[0], splittedCommand[1:]...),
 			WaitAfterStart: time.Millisecond * time.Duration(appConfig.HealthCheck.Http.WaitAfterStartMilli),
 			RepeatAfter:    time.Millisecond * time.Duration(appConfig.HealthCheck.Http.WaitAfterStartMilli),
 			Timeout:        time.Millisecond * time.Duration(appConfig.HealthCheck.Http.TimeoutMilli),
