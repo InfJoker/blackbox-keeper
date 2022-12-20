@@ -1,17 +1,29 @@
 apps:
-  bitch:
+  # app name
+  subprogram:
+    # command to run subprogram
     command: go run test/subprogram/subprogram.go
+    # health-check config
     health-check:
       http:
+        # host of the monitored process
         host: localhost
+        # port of the monitored process
         port: 1080
+        # path for monitoring
         path: /hello
+        # timeout of the monitoring request
         timeout: 1000
+        # time before starting monitoring
         wait-after-start: 10000
+        # time between monitoring requests
         repeat-after: 1000
+      # action for stopping application
       stop-action:
         signal:
+          # signal type for stopping application
           signal-type: SIGTERM
+          # signal timeout for stopping application
           timeout: 10000
     exporter:
       error-sleep: 1000

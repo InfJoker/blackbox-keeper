@@ -1,0 +1,32 @@
+<apps>
+    <subprogram>
+        <!--command to run subprogram-->
+        <command>./test/app</command>
+        <!--health-check config-->
+        <health-check>
+            <http>
+                <!--host of the monitored process-->
+                <host>localhost</host>
+                <!--port of the monitored process-->
+                <port>1080</port>
+                <!--path for monitoring-->
+                <path>/hello</path>
+                <!--time before starting monitoring-->
+                <wait-after-start>10000</wait-after-start>
+                <!--time between monitoring requests-->
+                <repeat-after>1000</repeat-after>
+                <!--timeout of the monitoring request-->
+                <timeout>1000</timeout>
+            </http>
+            <!--action for stopping application-->
+            <stop-action>
+                <signal>
+                    <!--signal type for stopping application-->
+                    <signal-type>SIGTERM</signal-type>
+                    <!--signal timeout for stopping application-->
+                    <timeout>10000</timeout>
+                </signal>
+            </stop-action>
+        </health-check>
+    </subprogram>
+</apps>
